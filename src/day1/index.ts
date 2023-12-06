@@ -60,6 +60,3 @@ export function calculateSum(input: string[]): number {
 
     return sum
 }
-
-
-

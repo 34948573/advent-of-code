@@ -14,7 +14,7 @@
     "start": "node dist/todo",
     "cs": "npm run compile && npm run start",
     "s": "npm run start",
-    "go": "node -r @swc-node/register /home/afischer/Development/advent-of-code/src/day$d/index.ts"
+    "go": "node -r @swc-node/register $(pwd)/src/day$d/index.ts"
   },
   "dependencies": {
     "axios": "1.6.0",
