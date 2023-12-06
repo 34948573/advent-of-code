@@ -7,13 +7,11 @@ const config: JestConfigWithTsJest = {
   testEnvironment: 'node',
   collectCoverage: true,
   coverageDirectory: '<rootDir>/coverage',
-  coveragePathIgnorePatterns: [
-    'tests'
-  ],
+  coveragePathIgnorePatterns: ['tests'],
   testMatch: ['<rootDir>/tests/**/*.test.ts'],
   transform: {
-    "^.+\\.(t|j)sx?$": "@swc/jest"
-   },
+    '^.+\\.(t|j)sx?$': '@swc/jest'
+  },
   coverageThreshold: {
     global: {
       branches: 100,
