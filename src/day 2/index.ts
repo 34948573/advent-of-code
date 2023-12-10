@@ -1,23 +1,21 @@
 class Cubes {
-  r: number
-  g: number
-  b: number
+  red: number
+  green: number
+  blue: number
 
-  constructor(r: number, g: number, b: number) {
-    this.r = r
-    this.g = g
-    this.b = b
+  constructor(red: number, green: number, blue: number) {
+    this.red = red
+    this.green = green
+    this.blue = blue
   }
 }
 
 class Game {
   id: number
-  revealedTimes: number
   cubes: Cubes[]
 
-  constructor(id: number, revealedCount: number, cubes: Cubes[]) {
+  constructor(id: number, cubes: Cubes[]) {
     this.id = id
-    this.revealedTimes = revealedCount
     this.cubes = cubes
   }
 }
@@ -51,7 +49,6 @@ function prepareData(game: string): Game {
     .split(': ')[1]
     .split('; ')
     .map((cubes) => cubes.split(', '))
-  const revealedTimes = cubesPerGame.length
 
   const cubes: Cubes[] = []
 
@@ -74,6 +71,7 @@ function prepareData(game: string): Game {
         case 'blue':
           blue = numberOfCubes
           break
+        // istanbul ignore next
         default:
           throw new Error(`no color found in colouredCubes: ${colouredCubes}`)
       }
@@ -82,7 +80,7 @@ function prepareData(game: string): Game {
     cubes.push(new Cubes(red, green, blue))
   })
 
-  return new Game(gameId, revealedTimes, cubes)
+  return new Game(gameId, cubes)
 }
 
 function isPossible(cubes: Cubes[], totalCubes: Cubes): boolean {
@@ -90,9 +88,9 @@ function isPossible(cubes: Cubes[], totalCubes: Cubes): boolean {
 
   cubes.forEach((revealedCubes) => {
     if (
-      revealedCubes.r > totalCubes.r ||
-      revealedCubes.g > totalCubes.g ||
-      revealedCubes.b > totalCubes.b
+      revealedCubes.red > totalCubes.red ||
+      revealedCubes.green > totalCubes.green ||
+      revealedCubes.blue > totalCubes.blue
     ) {
       //   console.log(
       //     `game with cubes ${JSON.stringify(revealedCubes)} is not possible`
@@ -110,9 +108,9 @@ function calculateMinimumCubesPower(cubes: Cubes[]): number {
   let blue = 0
 
   cubes.forEach((revealedCubes) => {
-    if (revealedCubes.r > red) red = revealedCubes.r
-    if (revealedCubes.g > green) green = revealedCubes.g
-    if (revealedCubes.b > blue) blue = revealedCubes.b
+    if (revealedCubes.red > red) red = revealedCubes.red
+    if (revealedCubes.green > green) green = revealedCubes.green
+    if (revealedCubes.blue > blue) blue = revealedCubes.blue
   })
 
   return red * green * blue
