@@ -1,10 +1,10 @@
 import { calculateSum } from '../../src/day1'
-import { smallTestData, challengeData } from './testData'
+import { sampleData, puzzleData } from './testData'
 
 it('sample data test', () => {
-  expect(calculateSum(smallTestData)).toEqual(281)
+  expect(calculateSum(sampleData)).toEqual(281)
 })
 
-it('challenge data test', () => {
-  expect(calculateSum(challengeData)).toEqual(53644)
+it('puzzle data test', () => {
+  expect(calculateSum(puzzleData)).toEqual(53644)
 })

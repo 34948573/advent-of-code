@@ -1,4 +1,4 @@
-export const smallTestData: string[] = [
+export const sampleData: string[] = [
   'two1nine',
   'eightwothree',
   'abcone2threexyz',
@@ -8,7 +8,7 @@ export const smallTestData: string[] = [
   '7pqrstsixteen'
 ]
 
-export const challengeData: string[] = [
+export const puzzleData: string[] = [
   'two934seven1',
   '8825eightknfv',
   'sevenoneqbfzntsix55',
