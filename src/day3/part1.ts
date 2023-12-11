@@ -1,6 +1,6 @@
 type PartNumber = {
   value: number
-  isRelevant?: boolean // isAdjacent to symbol other than .
+  isRelevant: boolean // isAdjacent to symbol other than .
   startIndex: number
   endIndex: number
   isAtStartOfLine: boolean
@@ -20,10 +20,17 @@ type Line = {
 export function executePart1(input: string[]): number {
   const preparedData = input.map((line) => prepareData(line))
 
-  const relevantNumbers = findRelevantNumbers(preparedData)
+  setRelevantNumbers(preparedData)
 
-  console.dir(preparedData, { depth: null })
-  return 4361
+  const sum = preparedData
+    .flatMap((line) => {
+      return line.partNumbers.filter((partNumber) => partNumber.isRelevant)
+    })
+    .reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.value
+    }, 0)
+
+  return sum
 }
 
 function prepareData(input: string): Line {
@@ -57,6 +64,7 @@ function findNumbers(input: string): PartNumber[] {
 
     numbers.push({
       value: +match[0],
+      isRelevant: false,
       startIndex: match.index,
       endIndex,
       isAtStartOfLine: match.index === 0 ? true : false,
@@ -67,6 +75,61 @@ function findNumbers(input: string): PartNumber[] {
   return numbers
 }
 
-function findRelevantNumbers(input: Line[]): number[] {
-  return []
+function setRelevantNumbers(lines: Line[]): void {
+  for (let i = 0; i < lines.length; i++) {
+    // no numbers in line, can skip
+    if (lines[i].partNumbers.length === 0) continue
+
+    if (i === 0) {
+      // first line, must not check against earlier line
+      lines[i].partNumbers.forEach((partNumber) => {
+        setNumberRelevanceAgainstAdjacentSymbols(partNumber, [
+          lines[i],
+          lines[i + 1]
+        ])
+      })
+    } else if (i === lines.length - 1) {
+      /// last line, must not check against next line
+      lines[i].partNumbers.forEach((partNumber) => {
+        setNumberRelevanceAgainstAdjacentSymbols(partNumber, [
+          lines[i],
+          lines[i - 1]
+        ])
+      })
+    } else {
+      // regular line, check before and after
+      lines[i].partNumbers.forEach((partNumber) => {
+        setNumberRelevanceAgainstAdjacentSymbols(partNumber, [
+          lines[i],
+          lines[i - 1],
+          lines[i + 1]
+        ])
+      })
+    }
+  }
+}
+
+function setNumberRelevanceAgainstAdjacentSymbols(
+  partNumber: PartNumber,
+  lines: Line[]
+): void {
+  lines.forEach((line) => {
+    line.symbols.forEach((engineSymbol) => {
+      if (partNumber.isAtStartOfLine) {
+        if (engineSymbol.index <= partNumber.startIndex + 1)
+          partNumber.isRelevant = true
+      } else if (partNumber.isAtEndOfLine) {
+        if (engineSymbol.index >= partNumber.startIndex - 1)
+          partNumber.isRelevant = true
+      } else {
+        if (
+          (engineSymbol.index <= partNumber.startIndex + 1 &&
+            engineSymbol.index >= partNumber.startIndex - 1) ||
+          (engineSymbol.index <= partNumber.endIndex + 1 &&
+            engineSymbol.index >= partNumber.endIndex - 1)
+        )
+          partNumber.isRelevant = true
+      }
+    })
+  })
 }
