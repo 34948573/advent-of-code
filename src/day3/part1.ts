@@ -83,23 +83,17 @@ function setRelevantNumbers(lines: Line[]): void {
     if (i === 0) {
       // first line, must not check against earlier line
       lines[i].partNumbers.forEach((partNumber) => {
-        setNumberRelevanceAgainstAdjacentSymbols(partNumber, [
-          lines[i],
-          lines[i + 1]
-        ])
+        checkForAdjacentSymbols(partNumber, [lines[i], lines[i + 1]])
       })
     } else if (i === lines.length - 1) {
       /// last line, must not check against next line
       lines[i].partNumbers.forEach((partNumber) => {
-        setNumberRelevanceAgainstAdjacentSymbols(partNumber, [
-          lines[i],
-          lines[i - 1]
-        ])
+        checkForAdjacentSymbols(partNumber, [lines[i], lines[i - 1]])
       })
     } else {
       // regular line, check before and after
       lines[i].partNumbers.forEach((partNumber) => {
-        setNumberRelevanceAgainstAdjacentSymbols(partNumber, [
+        checkForAdjacentSymbols(partNumber, [
           lines[i],
           lines[i - 1],
           lines[i + 1]
@@ -109,10 +103,7 @@ function setRelevantNumbers(lines: Line[]): void {
   }
 }
 
-function setNumberRelevanceAgainstAdjacentSymbols(
-  partNumber: PartNumber,
-  lines: Line[]
-): void {
+function checkForAdjacentSymbols(partNumber: PartNumber, lines: Line[]): void {
   lines.forEach((line) => {
     line.symbols.forEach((engineSymbol) => {
       if (partNumber.isAtStartOfLine) {
