@@ -107,7 +107,7 @@ function checkForAdjacentSymbols(partNumber: PartNumber, lines: Line[]): void {
   lines.forEach((line) => {
     line.symbols.forEach((engineSymbol) => {
       if (partNumber.isAtStartOfLine) {
-        if (engineSymbol.index <= partNumber.startIndex + 1)
+        if (engineSymbol.index <= partNumber.endIndex + 1)
           partNumber.isRelevant = true
       } else if (partNumber.isAtEndOfLine) {
         if (engineSymbol.index >= partNumber.startIndex - 1)

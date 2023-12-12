@@ -16,6 +16,6 @@ describe('part 1', () => {
       .readFileSync(path.resolve(__dirname, 'puzzleData.txt'), 'utf8')
       .split('\n')
 
-    // expect(executePart1(input)).toEqual(4361)
+    expect(executePart1(input)).toEqual(540131)
   })
 })
