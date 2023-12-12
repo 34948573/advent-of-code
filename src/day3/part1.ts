@@ -17,7 +17,7 @@ type Line = {
   symbols: EngineSymbol[]
 }
 
-export function executePart1(input: string[]): number {
+export function execute(input: string[]): number {
   const preparedData = input.map((line) => prepareData(line))
 
   setRelevantNumbers(preparedData)

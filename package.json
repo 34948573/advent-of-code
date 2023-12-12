@@ -4,17 +4,12 @@
   "description": "",
   "license": "ISC",
   "scripts": {
-    "container": "npm install",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "jest --silent=false --verbose=true --maxWorkers=1",
     "t": "npm run test",
     "compile": "npx swc src -d dist",
-    "c": "npm run compile",
-    "start": "node dist/todo",
-    "cs": "npm run compile && npm run start",
-    "s": "npm run start",
-    "go": "node -r @swc-node/register $(pwd)/src/day$d/index.ts"
+    "c": "npm run compile"
   },
   "devDependencies": {
     "@swc-node/register": "^1.6.8",

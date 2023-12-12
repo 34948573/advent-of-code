@@ -54,9 +54,5 @@ export function calculateSum(input: string[]): number {
     return accumulator + currentValue
   }, 0)
 
-  // solution step 1: 52974
-  // solution step 2: 53644
-  console.log(sum)
-
   return sum
 }
