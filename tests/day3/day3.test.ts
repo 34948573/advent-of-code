@@ -24,7 +24,7 @@ describe('day 3', () => {
 
   describe('part 2', () => {
     it('sample data', () => {
-      expect(executePart2(sampleData)).toEqual(4361)
+      expect(executePart2(sampleData)).toEqual(467835)
     })
 
     it('puzzle data', () => {

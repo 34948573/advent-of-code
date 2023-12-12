@@ -3,13 +3,14 @@ type PartNumber = {
   isRelevant: boolean // isAdjacent to symbol other than .
   startIndex: number
   endIndex: number
-  isAtStartOfLine: boolean
-  isAtEndOfLine: boolean
 }
 
 type EngineSymbol = {
   index: number
   value: string
+  adjacentNumbers: number[]
+  isAtStartOfLine: boolean
+  isAtEndOfLine: boolean
 }
 
 type Line = {
@@ -22,12 +23,23 @@ export function execute(input: string[]): number {
 
   setRelevantNumbers(preparedData)
 
+  const multiplications = preparedData.flatMap((line) => {
+    return line.symbols.filter((symbol) => symbol.adjacentNumbers.length === 2)
+  })
+
   const sum = preparedData
     .flatMap((line) => {
-      return line.partNumbers.filter((partNumber) => partNumber.isRelevant)
+      return line.symbols.filter(
+        (symbol) => symbol.adjacentNumbers.length === 2
+      )
     })
     .reduce((accumulator, currentValue) => {
-      return accumulator + currentValue.value
+      return (
+        accumulator +
+        currentValue.adjacentNumbers.reduce((multiplier, value) => {
+          return multiplier * value
+        }, 0)
+      )
     }, 0)
 
   return sum
@@ -47,7 +59,14 @@ function findSymbols(input: string): EngineSymbol[] {
   const regex = /[^.\d]/g
 
   while ((match = regex.exec(input)) != null) {
-    symbols.push({ index: match.index, value: match[0] })
+    const endIndex = match.index + match[0].length - 1
+    symbols.push({
+      index: match.index,
+      value: match[0],
+      adjacentNumbers: [],
+      isAtStartOfLine: match.index === 0 ? true : false,
+      isAtEndOfLine: endIndex === input.length - 1 ? true : false
+    })
   }
 
   return symbols
@@ -60,15 +79,11 @@ function findNumbers(input: string): PartNumber[] {
   const regex = /[0-9]+/g
 
   while ((match = regex.exec(input)) !== null) {
-    const endIndex = match.index + match[0].length - 1
-
     numbers.push({
       value: +match[0],
       isRelevant: false,
       startIndex: match.index,
-      endIndex,
-      isAtStartOfLine: match.index === 0 ? true : false,
-      isAtEndOfLine: endIndex === input.length - 1 ? true : false
+      endIndex: match.index + match[0].length - 1
     })
   }
 
@@ -77,49 +92,47 @@ function findNumbers(input: string): PartNumber[] {
 
 function setRelevantNumbers(lines: Line[]): void {
   for (let i = 0; i < lines.length; i++) {
-    // no numbers in line, can skip
-    if (lines[i].partNumbers.length === 0) continue
+    // no symbols in line, can skip
+    if (lines[i].symbols.length === 0) continue
 
     if (i === 0) {
       // first line, must not check against earlier line
-      lines[i].partNumbers.forEach((partNumber) => {
-        checkForAdjacentSymbols(partNumber, [lines[i], lines[i + 1]])
+      lines[i].symbols.forEach((symbol) => {
+        checkForAdjacentNumbers(symbol, [lines[i], lines[i + 1]])
       })
     } else if (i === lines.length - 1) {
       /// last line, must not check against next line
-      lines[i].partNumbers.forEach((partNumber) => {
-        checkForAdjacentSymbols(partNumber, [lines[i], lines[i - 1]])
+      lines[i].symbols.forEach((symbol) => {
+        checkForAdjacentNumbers(symbol, [lines[i], lines[i - 1]])
       })
     } else {
       // regular line, check before and after
-      lines[i].partNumbers.forEach((partNumber) => {
-        checkForAdjacentSymbols(partNumber, [
-          lines[i],
-          lines[i - 1],
-          lines[i + 1]
-        ])
+      lines[i].symbols.forEach((symbol) => {
+        checkForAdjacentNumbers(symbol, [lines[i], lines[i - 1], lines[i + 1]])
       })
     }
   }
 }
 
-function checkForAdjacentSymbols(partNumber: PartNumber, lines: Line[]): void {
+function checkForAdjacentNumbers(symbol: EngineSymbol, lines: Line[]): void {
+  if (symbol.value !== '*') return
+
   lines.forEach((line) => {
-    line.symbols.forEach((engineSymbol) => {
-      if (partNumber.isAtStartOfLine) {
-        if (engineSymbol.index <= partNumber.endIndex + 1)
-          partNumber.isRelevant = true
-      } else if (partNumber.isAtEndOfLine) {
-        if (engineSymbol.index >= partNumber.startIndex - 1)
-          partNumber.isRelevant = true
+    line.partNumbers.forEach((partNumber) => {
+      if (symbol.isAtStartOfLine) {
+        if (partNumber.endIndex <= symbol.index + 1)
+          symbol.adjacentNumbers.push(partNumber.value)
+      } else if (symbol.isAtEndOfLine) {
+        if (partNumber.startIndex >= symbol.index - 1)
+          symbol.adjacentNumbers.push(partNumber.value)
       } else {
         if (
-          (engineSymbol.index <= partNumber.startIndex + 1 &&
-            engineSymbol.index >= partNumber.startIndex - 1) ||
-          (engineSymbol.index <= partNumber.endIndex + 1 &&
-            engineSymbol.index >= partNumber.endIndex - 1)
+          (partNumber.startIndex <= symbol.index + 1 &&
+            partNumber.startIndex >= symbol.index - 1) ||
+          (partNumber.endIndex <= symbol.index + 1 &&
+            partNumber.endIndex >= symbol.index - 1)
         )
-          partNumber.isRelevant = true
+          symbol.adjacentNumbers.push(partNumber.value)
       }
     })
   })
