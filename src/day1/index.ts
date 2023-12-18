@@ -59,6 +59,7 @@ function convertToNumber(number: string): string {
 }
 
 export function calculateSum(input: string[]): number {
+  results.length = 0
   input.forEach((x) => extractNumbers(x))
 
   const sum = results.reduce((accumulator, currentValue) => {
