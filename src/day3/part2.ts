@@ -23,17 +23,22 @@ export function execute(input: string[]): number {
 
   setRelevantNumbers(preparedData)
 
-  let result = 0
-
-  preparedData
+  const sum = preparedData
     .flatMap((line) => {
       return line.symbols.filter(
         (symbol) => symbol.adjacentNumbers.length === 2
       )
     })
-    .forEach((x) => (result += x.adjacentNumbers[0] * x.adjacentNumbers[1]))
+    .reduce((accumulator, currentLine) => {
+      return (
+        accumulator +
+        currentLine.adjacentNumbers.reduce(
+          (multiplier, currentNumber) => multiplier * currentNumber
+        )
+      )
+    }, 0)
 
-  return result
+  return sum
 }
 
 function prepareData(input: string): Line {
