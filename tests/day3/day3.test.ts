@@ -28,7 +28,7 @@ describe('day 3', () => {
     })
 
     it('puzzle data', () => {
-      expect(executePart2(puzzleData)).toEqual(540131)
+      expect(executePart2(puzzleData)).toEqual(86879020)
     })
   })
 })

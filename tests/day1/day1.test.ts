@@ -6,5 +6,5 @@ it('sample data test', () => {
 })
 
 it('puzzle data test', () => {
-  expect(calculateSum(puzzleData)).toEqual(53868) // 505 off
+  expect(calculateSum(puzzleData)).toEqual(53340)
 })

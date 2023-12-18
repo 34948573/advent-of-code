@@ -2,16 +2,18 @@ const results: number[] = []
 
 function extractNumbers(input: string): void {
   const regex = /(one|two|three|four|five|six|seven|eight|nine|\d)/g
-  const matches = [...input.matchAll(regex)]
+  const reverseRegex = /(eno|owt|eerht|ruof|evif|xis|neves|thgie|enin|\d)/g
+  const firstMatch = regex.exec(input)
+  const reverseInput = input.split('').reverse().join('')
+  const lastMatch = reverseRegex.exec(reverseInput)
 
-  if (!matches[0]) {
+  if (!firstMatch || !lastMatch) {
     console.log(`Couldn't find numbers in input ${input}`)
     return
   }
 
   const matchedNumbers =
-    convertToNumber(matches[0][0]) +
-    convertToNumber(matches[matches.length - 1][0])
+    convertToNumber(firstMatch[0]) + convertToNumber(lastMatch[0])
   const result = parseInt(matchedNumbers)
 
   if (result < 11 || result > 99) {
@@ -25,22 +27,31 @@ function extractNumbers(input: string): void {
 function convertToNumber(number: string): string {
   switch (number) {
     case 'one':
+    case 'eno':
       return '1'
     case 'two':
+    case 'owt':
       return '2'
     case 'three':
+    case 'eerht':
       return '3'
     case 'four':
+    case 'ruof':
       return '4'
     case 'five':
+    case 'evif':
       return '5'
     case 'six':
+    case 'xis':
       return '6'
     case 'seven':
+    case 'neves':
       return '7'
     case 'eight':
+    case 'thgie':
       return '8'
     case 'nine':
+    case 'enin':
       return '9'
     default:
       return number

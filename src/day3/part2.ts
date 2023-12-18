@@ -23,26 +23,17 @@ export function execute(input: string[]): number {
 
   setRelevantNumbers(preparedData)
 
-  const multiplications = preparedData.flatMap((line) => {
-    return line.symbols.filter((symbol) => symbol.adjacentNumbers.length === 2)
-  })
+  let result = 0
 
-  const sum = preparedData
+  preparedData
     .flatMap((line) => {
       return line.symbols.filter(
         (symbol) => symbol.adjacentNumbers.length === 2
       )
     })
-    .reduce((accumulator, currentValue) => {
-      return (
-        accumulator +
-        currentValue.adjacentNumbers.reduce((multiplier, value) => {
-          return multiplier * value
-        }, 0)
-      )
-    }, 0)
+    .forEach((x) => (result += x.adjacentNumbers[0] * x.adjacentNumbers[1]))
 
-  return sum
+  return result
 }
 
 function prepareData(input: string): Line {
