@@ -1,4 +1,4 @@
-enum Categories {
+enum Category {
   SEED = 'seed',
   SOIL = 'soil',
   FERTILIZER = 'fertilizer',
@@ -16,8 +16,8 @@ type RangeMap = {
 }
 
 type FromToMap = {
-  from: Categories
-  to: Categories
+  from: Category
+  to: Category
   maps: RangeMap[]
 }
 
@@ -51,8 +51,8 @@ function prepareData(input: string[]): {
     }
     if (line.includes('map:')) {
       preparedData.push({
-        from: line.split('-')[0] as Categories,
-        to: line.split('-')[2].split(' ')[0] as Categories,
+        from: line.split('-')[0] as Category,
+        to: line.split('-')[2].split(' ')[0] as Category,
         maps: []
       })
       newMap = false
@@ -71,4 +71,14 @@ function prepareData(input: string[]): {
     seeds,
     preparedData
   }
+}
+
+function findMap(
+  category: Category,
+  preparedData: FromToMap[],
+  direction: 'from' | 'to' = 'to'
+): FromToMap {
+  if (direction === 'from')
+    return preparedData.find((x) => x.from === category)!
+  return preparedData.find((x) => x.to === category)!
 }
