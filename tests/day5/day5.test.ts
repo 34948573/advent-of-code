@@ -13,12 +13,12 @@ const puzzleData = fs
 
 describe('day 5 ', () => {
   describe('part 1', () => {
-    it.only('sample data', () => {
+    it('sample data', () => {
       expect(executePart1(sampleData)).toEqual(35)
     })
 
     it('puzzle data', () => {
-      expect(executePart1(puzzleData)).toEqual(0)
+      expect(executePart1(puzzleData)).toEqual(525792406)
     })
   })
 

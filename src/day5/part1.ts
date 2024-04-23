@@ -24,9 +24,35 @@ type FromToMap = {
 export function execute(input: string[]): number {
   const { seeds, preparedData } = prepareData(input)
 
-  console.log(seeds)
-  console.dir(preparedData, { depth: null, colors: true })
-  return 35
+  const result: number[] = []
+
+  seeds.forEach((seed) => {
+    const seedResult: number[] = [seed]
+    preparedData.forEach((fromToMap, i) => {
+      let target: number | null = null
+
+      fromToMap.maps.forEach((numberMaps, j) => {
+        if (target) return
+
+        if (
+          seedResult[i] >= numberMaps.sourceRangeStart &&
+          numberMaps.sourceRangeStart + numberMaps.rangeLength >= seedResult[i]
+        ) {
+          target =
+            numberMaps.destinationRangeStart +
+            (seedResult[i] - numberMaps.sourceRangeStart)
+        } else if (j === fromToMap.maps.length - 1) {
+          target = seedResult[i]
+        }
+      })
+
+      seedResult.push(target!)
+    })
+
+    result.push(seedResult.at(-1)!)
+  })
+
+  return result.sort((a, b) => a - b)[0]
 }
 
 function prepareData(input: string[]): {
