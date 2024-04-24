@@ -9,41 +9,50 @@ type FromToMap = {
 }
 
 export function execute(input: string[]): number {
-  const { seedNumbers, preparedData } = prepareData(input)
+  const { seeds, preparedData } = prepareData(input)
 
-  const result: number[] = []
+  const seedNumbers: number[] = []
+  let result: number | null = null
 
-  seedNumbers.forEach((seed) => {
-    const seedResult: number[] = [seed]
-    preparedData.forEach((fromToMap, i) => {
-      let target: number | null = null
+  for (let i = 0; i < seeds.length; i++) {
+    // extract seedNumbers from ranges
+    // -> even = start seed, +1 = range
+    const isEven = i % 2 === 0
+    if (isEven) {
+      for (let j = 0; j < seeds[i + 1]; j++) {
+        const seedResult: number[] = [seeds[i] + j]
 
-      fromToMap.maps.forEach((numberMaps, j) => {
-        if (target) return
+        preparedData.forEach((fromToMap, i) => {
+          let target: number | null = null
 
-        if (
-          seedResult[i] >= numberMaps.sourceRangeStart &&
-          numberMaps.sourceRangeStart + numberMaps.rangeLength >= seedResult[i]
-        ) {
-          target =
-            numberMaps.destinationRangeStart +
-            (seedResult[i] - numberMaps.sourceRangeStart)
-        } else if (j === fromToMap.maps.length - 1) {
-          target = seedResult[i]
-        }
-      })
+          fromToMap.maps.forEach((numberMaps, j) => {
+            if (target) return
 
-      seedResult.push(target!)
-    })
+            if (
+              seedResult[i] >= numberMaps.sourceRangeStart &&
+              numberMaps.sourceRangeStart + numberMaps.rangeLength >=
+                seedResult[i]
+            ) {
+              target =
+                numberMaps.destinationRangeStart +
+                (seedResult[i] - numberMaps.sourceRangeStart)
+            } else if (j === fromToMap.maps.length - 1) {
+              target = seedResult[i]
+            }
+          })
 
-    result.push(seedResult.at(-1)!)
-  })
+          seedResult.push(target!)
+        })
+        if (!result || seedResult.at(-1)! < result) result = seedResult.at(-1)!
+      }
+    }
+  }
 
-  return result.sort((a, b) => a - b)[0]
+  return result!
 }
 
 function prepareData(input: string[]): {
-  seedNumbers: number[]
+  seeds: number[]
   preparedData: FromToMap[]
 } {
   const preparedData: FromToMap[] = []
@@ -78,21 +87,8 @@ function prepareData(input: string[]): {
     }
   })
 
-  const seedNumbers: number[] = []
-
-  for (let i = 0; i < seeds.length; i++) {
-    // extract seedNumbers from ranges
-    // -> even = start seed, +1 = range
-    const isEven = i % 2 === 0
-    if (isEven) {
-      for (let j = 0; j < seeds[i + 1]; j++) {
-        seedNumbers.push(seeds[i] + j)
-      }
-    }
-  }
-
   return {
-    seedNumbers,
+    seeds,
     preparedData
   }
 }
