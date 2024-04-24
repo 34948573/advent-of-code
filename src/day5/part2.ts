@@ -30,7 +30,54 @@ export function execute(input: string[]): number {
 
   let result: number | null = null
 
+  // find out the excluded ranges, don't even start the loops for those
   sourceSeedRanges.forEach((sourceSeedRange) => {
+    const rangesToExecute: Range[] = []
+
+    excludedRanges.forEach((excluded) => {
+      const intersectedRanges: Range[] = []
+
+      // case: both within excluded range
+      if (
+        sourceSeedRange.from >= excluded.from &&
+        sourceSeedRange.to <= excluded.to
+      ) {
+        intersectedRanges.push({
+          from: sourceSeedRange.from,
+          to: sourceSeedRange.to
+        })
+        // case: start outside, end within
+      } else if (
+        sourceSeedRange.to <= excluded.to &&
+        sourceSeedRange.to >= excluded.from
+      ) {
+        intersectedRanges.push({
+          from: excluded.from,
+          to: sourceSeedRange.to
+        })
+        // case: start in excluded, end outside
+      } else if (
+        sourceSeedRange.from >= excluded.from &&
+        sourceSeedRange.from <= excluded.to
+      ) {
+        intersectedRanges.push({ from: sourceSeedRange.from, to: excluded.to })
+      }
+
+      intersectedRanges.sort((a, b) => a.from - b.from)
+      // fill in rangesToExecute - all the "other" ranges that are not within the intersections
+      intersectedRanges.forEach((intersection) => {
+        const range = {
+          from: 0,
+          to: 0
+        }
+        if (sourceSeedRange.from <= intersection.from) {
+          range.from = sourceSeedRange.from
+        }
+      })
+    })
+
+    // execute ranges to execute
+
     loop1: for (let i = sourceSeedRange.from; i <= sourceSeedRange.to; i++) {
       for (let j = 0; j < excludedRanges.length; j++) {
         console.log('excluded ranges: ', excludedRanges)
