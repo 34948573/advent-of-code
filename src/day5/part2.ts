@@ -17,9 +17,8 @@ export function execute(input: string[]): number {
   const { seeds, preparedData } = prepareData(input)
 
   const sourceSeedRanges: Range[] = []
-  const excludedRanges: Range[] = []
 
-  for (let i = 0; i < seeds[i + 1]; i++) {
+  for (let i = 0; i < seeds.length; i++) {
     const isEven = i % 2 === 0
     if (isEven) {
       sourceSeedRanges.push({ from: seeds[i], to: seeds[i] + seeds[i + 1] })
@@ -30,108 +29,39 @@ export function execute(input: string[]): number {
 
   let result: number | null = null
 
-  // find out the excluded ranges, don't even start the loops for those
-  sourceSeedRanges.forEach((sourceSeedRange) => {
-    const rangesToExecute: Range[] = []
-
-    excludedRanges.forEach((excluded) => {
-      const intersectedRanges: Range[] = []
-
-      // case: both within excluded range
-      if (
-        sourceSeedRange.from >= excluded.from &&
-        sourceSeedRange.to <= excluded.to
-      ) {
-        intersectedRanges.push({
-          from: sourceSeedRange.from,
-          to: sourceSeedRange.to
-        })
-        // case: start outside, end within
-      } else if (
-        sourceSeedRange.to <= excluded.to &&
-        sourceSeedRange.to >= excluded.from
-      ) {
-        intersectedRanges.push({
-          from: excluded.from,
-          to: sourceSeedRange.to
-        })
-        // case: start in excluded, end outside
-      } else if (
-        sourceSeedRange.from >= excluded.from &&
-        sourceSeedRange.from <= excluded.to
-      ) {
-        intersectedRanges.push({ from: sourceSeedRange.from, to: excluded.to })
-      }
-
-      intersectedRanges.sort((a, b) => a.from - b.from)
-
-      // fill in rangesToExecute - all the "other" ranges that are not within the intersections
-      let isAnyInIntersection = true
-      function extractRangesByIntersectionsRecursive(
-        inputWithMaybeIntersections: Range[]
-      ): Range[] {
-        // loop temp...
-        if (!rangesToExecute.length) {
-          for (let i = 0; i < intersectedRanges.length; i++) {
-            if (i === intersectedRanges.length - 1) {
-              // last range in access
-            }
-            rangesToExecute.push({
-              from: intersectedRanges[i].to + 1,
-              to: intersectedRanges[i + 1].from - 1
-            })
-          }
-        }
-
-        isAnyInIntersection = false
-        if (isAnyInIntersection) {
-          extractRangesByIntersectionsRecursive(rangesToExecute)
-        }
-        return rangesToExecute
-      }
-    })
-
-    // execute ranges to execute
+  sourceSeedRanges.forEach((sourceSeedRange, rangeIndex) => {
+    console.log(
+      `executing logic for source seed range ${rangeIndex}:`,
+      sourceSeedRange,
+      `current result: ${result}`
+    )
 
     loop1: for (let i = sourceSeedRange.from; i <= sourceSeedRange.to; i++) {
-      for (let j = 0; j < excludedRanges.length; j++) {
-        console.log('excluded ranges: ', excludedRanges)
-        if (i >= excludedRanges[j].from && i <= excludedRanges[j].to) {
-          continue loop1 // continue outer loop, seed is in excluded range from earlier run
-        }
-      }
       const seedResult: number[] = [i]
 
       preparedData.forEach((fromToMap, outerMapIndex) => {
-        let target: number | null = null
+        let mappingResult: number | null = null
 
         fromToMap.maps.forEach((numberMaps, innerMapIndex) => {
-          if (target) return
+          if (mappingResult) return
 
           if (
             seedResult[outerMapIndex] >= numberMaps.sourceRangeStart &&
             numberMaps.sourceRangeStart + numberMaps.rangeLength >=
               seedResult[outerMapIndex]
           ) {
-            target =
+            mappingResult =
               numberMaps.destinationRangeStart +
               (seedResult[outerMapIndex] - numberMaps.sourceRangeStart)
           } else if (innerMapIndex === fromToMap.maps.length - 1) {
-            target = seedResult[outerMapIndex]
+            mappingResult = seedResult[outerMapIndex]
           }
         })
 
-        seedResult.push(target!)
+        seedResult.push(mappingResult!)
       })
-      if (!result || seedResult.at(-1)! < result) result = seedResult.at(-1)!
 
-      // exclude this range from future runs
-      if (i === sourceSeedRange.to) {
-        excludedRanges.push({
-          from: sourceSeedRange.from,
-          to: sourceSeedRange.to
-        })
-      }
+      if (!result || seedResult.at(-1)! < result) result = seedResult.at(-1)!
     }
   })
 
