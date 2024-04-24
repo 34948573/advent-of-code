@@ -36,7 +36,7 @@ export function execute(input: string[]): number {
       `current result: ${result}`
     )
 
-    loop1: for (let i = sourceSeedRange.from; i <= sourceSeedRange.to; i++) {
+    for (let i = sourceSeedRange.from; i <= sourceSeedRange.to; i++) {
       const seedResult: number[] = [i]
 
       preparedData.forEach((fromToMap, outerMapIndex) => {
