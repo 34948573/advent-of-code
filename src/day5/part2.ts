@@ -8,45 +8,70 @@ type FromToMap = {
   maps: RangeMap[]
 }
 
+type Range = {
+  from: number
+  to: number
+}
+
 export function execute(input: string[]): number {
   const { seeds, preparedData } = prepareData(input)
 
-  const seedNumbers: number[] = []
-  let result: number | null = null
+  const sourceSeedRanges: Range[] = []
+  const excludedRanges: Range[] = []
 
-  for (let i = 0; i < seeds.length; i++) {
-    // extract seedNumbers from ranges
-    // -> even = start seed, +1 = range
+  for (let i = 0; i < seeds[i + 1]; i++) {
     const isEven = i % 2 === 0
     if (isEven) {
-      for (let j = 0; j < seeds[i + 1]; j++) {
-        const seedResult: number[] = [seeds[i] + j]
-
-        preparedData.forEach((fromToMap, i) => {
-          let target: number | null = null
-
-          fromToMap.maps.forEach((numberMaps, j) => {
-            if (target) return
-
-            if (
-              seedResult[i] >= numberMaps.sourceRangeStart &&
-              numberMaps.sourceRangeStart + numberMaps.rangeLength >=
-                seedResult[i]
-            ) {
-              target =
-                numberMaps.destinationRangeStart +
-                (seedResult[i] - numberMaps.sourceRangeStart)
-            } else if (j === fromToMap.maps.length - 1) {
-              target = seedResult[i]
-            }
-          })
-
-          seedResult.push(target!)
-        })
-        if (!result || seedResult.at(-1)! < result) result = seedResult.at(-1)!
-      }
+      sourceSeedRanges.push({ from: seeds[i], to: seeds[i] + seeds[i + 1] })
     }
   }
+
+  console.log('source seed ranges: ', sourceSeedRanges)
+
+  let result: number | null = null
+
+  sourceSeedRanges.forEach((sourceSeedRange) => {
+    loop1: for (let i = sourceSeedRange.from; i <= sourceSeedRange.to; i++) {
+      for (let j = 0; j < excludedRanges.length; j++) {
+        console.log('excluded ranges: ', excludedRanges)
+        if (i >= excludedRanges[j].from && i <= excludedRanges[j].to) {
+          continue loop1 // continue outer loop, seed is in excluded range from earlier run
+        }
+      }
+      const seedResult: number[] = [i]
+
+      preparedData.forEach((fromToMap, outerMapIndex) => {
+        let target: number | null = null
+
+        fromToMap.maps.forEach((numberMaps, innerMapIndex) => {
+          if (target) return
+
+          if (
+            seedResult[outerMapIndex] >= numberMaps.sourceRangeStart &&
+            numberMaps.sourceRangeStart + numberMaps.rangeLength >=
+              seedResult[outerMapIndex]
+          ) {
+            target =
+              numberMaps.destinationRangeStart +
+              (seedResult[outerMapIndex] - numberMaps.sourceRangeStart)
+          } else if (innerMapIndex === fromToMap.maps.length - 1) {
+            target = seedResult[outerMapIndex]
+          }
+        })
+
+        seedResult.push(target!)
+      })
+      if (!result || seedResult.at(-1)! < result) result = seedResult.at(-1)!
+
+      // exclude this range from future runs
+      if (i == sourceSeedRange.to) {
+        excludedRanges.push({
+          from: sourceSeedRange.from,
+          to: sourceSeedRange.to
+        })
+      }
+    }
+  })
 
   return result!
 }

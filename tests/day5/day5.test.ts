@@ -22,7 +22,7 @@ describe('day 5 ', () => {
     })
   })
 
-  describe('template', () => {
+  describe('part 2', () => {
     it('sample data', () => {
       expect(executePart2(sampleData)).toEqual(46)
     })
