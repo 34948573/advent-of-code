@@ -64,16 +64,31 @@ export function execute(input: string[]): number {
       }
 
       intersectedRanges.sort((a, b) => a.from - b.from)
+
       // fill in rangesToExecute - all the "other" ranges that are not within the intersections
-      intersectedRanges.forEach((intersection) => {
-        const range = {
-          from: 0,
-          to: 0
+      let isAnyInIntersection = true
+      function extractRangesByIntersectionsRecursive(
+        inputWithMaybeIntersections: Range[]
+      ): Range[] {
+        // loop temp...
+        if (!rangesToExecute.length) {
+          for (let i = 0; i < intersectedRanges.length; i++) {
+            if (i === intersectedRanges.length - 1) {
+              // last range in access
+            }
+            rangesToExecute.push({
+              from: intersectedRanges[i].to + 1,
+              to: intersectedRanges[i + 1].from - 1
+            })
+          }
         }
-        if (sourceSeedRange.from <= intersection.from) {
-          range.from = sourceSeedRange.from
+
+        isAnyInIntersection = false
+        if (isAnyInIntersection) {
+          extractRangesByIntersectionsRecursive(rangesToExecute)
         }
-      })
+        return rangesToExecute
+      }
     })
 
     // execute ranges to execute
@@ -111,7 +126,7 @@ export function execute(input: string[]): number {
       if (!result || seedResult.at(-1)! < result) result = seedResult.at(-1)!
 
       // exclude this range from future runs
-      if (i == sourceSeedRange.to) {
+      if (i === sourceSeedRange.to) {
         excludedRanges.push({
           from: sourceSeedRange.from,
           to: sourceSeedRange.to
