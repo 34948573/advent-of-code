@@ -32,6 +32,9 @@ export function execute(input: string[]): number {
 
   let result: number | null = null
 
+  console.log('start time', new Date().toISOString())
+  let counter = 0
+
   sourceSeedRanges.forEach((sourceSeedRange, rangeIndex) => {
     console.log(
       `executing logic for source seed range ${rangeIndex}:`,
@@ -63,7 +66,10 @@ export function execute(input: string[]): number {
 
         seedResult.push(mappingResult!)
       })
-
+      counter++
+      if (counter !== 0 && counter % 100_000_000 === 0) {
+        console.log('100 mio seeds processed', new Date())
+      }
       if (!result || seedResult.at(-1)! < result) result = seedResult.at(-1)!
     }
   })
