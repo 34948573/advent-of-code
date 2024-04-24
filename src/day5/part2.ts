@@ -18,13 +18,16 @@ export function execute(input: string[]): number {
 
   const sourceSeedRanges: Range[] = []
 
+  let totalCount = 0
   for (let i = 0; i < seeds.length; i++) {
     const isEven = i % 2 === 0
     if (isEven) {
+      totalCount += seeds[i + 1]
       sourceSeedRanges.push({ from: seeds[i], to: seeds[i] + seeds[i + 1] })
     }
   }
 
+  console.log('total seed count:', totalCount)
   console.log('source seed ranges: ', sourceSeedRanges)
 
   let result: number | null = null
